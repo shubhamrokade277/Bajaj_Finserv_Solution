@@ -15,27 +15,24 @@ public class DestinationHashGenerator {
             return;
         }
 
-        String prnNumber = args[0].toLowerCase().trim(); // Step 1: Read PRN number and JSON file path
+        String prnNumber = args[0].toLowerCase().trim();
         String jsonFilePath = args[1];
 
         try {
-            // Step 2: Parse the JSON file
+
             JsonObject jsonObject = JsonParser.parseReader(new FileReader(jsonFilePath)).getAsJsonObject();
-            String destinationValue = findDestinationValue(jsonObject); // Step 3: Traverse the JSON
+            String destinationValue = findDestinationValue(jsonObject);
 
             if (destinationValue == null) {
                 System.out.println("No 'destination' key found in the JSON file.");
                 return;
             }
 
-            // Step 4: Generate a random alphanumeric string of size 8
             String randomString = generateRandomString(8);
 
-            // Step 5: Generate the MD5 hash
             String concatenatedString = prnNumber + destinationValue + randomString;
             String hash = generateMD5Hash(concatenatedString);
 
-            // Step 6: Format and print the output
             String output = hash + ";" + randomString;
             System.out.println(output);
 
@@ -45,7 +42,6 @@ public class DestinationHashGenerator {
         }
     }
 
-    // Function to traverse the JSON and find the first instance of the "destination" key
     private static String findDestinationValue(JsonObject jsonObject) {
         for (String key : jsonObject.keySet()) {
             JsonElement element = jsonObject.get(key);
@@ -53,13 +49,13 @@ public class DestinationHashGenerator {
                 return element.getAsString();
             } else if (element.isJsonObject()) {
                 String result = findDestinationValue(element.getAsJsonObject());
-                if (result != null) return result;
+                if (result != null)
+                    return result;
             }
         }
         return null;
     }
 
-    // Function to generate a random alphanumeric string of given length
     private static String generateRandomString(int length) {
         String characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         Random random = new Random();
@@ -72,7 +68,6 @@ public class DestinationHashGenerator {
         return sb.toString();
     }
 
-    // Function to generate MD5 hash of the input string
     private static String generateMD5Hash(String input) {
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
